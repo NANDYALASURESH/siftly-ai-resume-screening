@@ -1,0 +1,3 @@
+Brian Lee. 5 years of professional experience. Skilled in java, sql,
+docker, kubernetes, aws, linux. Strong problem solver with attention
+to detail.

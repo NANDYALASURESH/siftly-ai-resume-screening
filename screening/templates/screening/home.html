@@ -1,0 +1,148 @@
+{% extends "screening/base.html" %}
+{% block nav_home %}active{% endblock %}
+{% block title %}New Screening — Siftly{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <span class="hero-eyebrow"><i class="bi bi-stars"></i> Trained classifier, not keyword matching</span>
+    <h1>Screen smarter. Shortlist faster.</h1>
+    <p class="lead">
+        Paste a job description, add candidate resumes, and a trained
+        Random Forest model scores each one on skill overlap, experience
+        fit, and textual relevance &mdash; then ranks them for you.
+    </p>
+</div>
+
+{% if not model_ready %}
+    <div class="app-alert d-flex align-items-start mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+        <div>
+            <strong>Trained model not found.</strong> Run
+            <code>python screening/ml/generate_training_data.py</code> then
+            <code>python screening/ml/train_model.py</code> before screening candidates.
+        </div>
+    </div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <form method="post" enctype="multipart/form-data" id="screening-form">
+            {% csrf_token %}
+
+            <div class="app-card">
+                <h2><span class="section-num">1</span> Job Description</h2>
+                <p class="section-help">What role are you hiring for? Paste the full posting for the best match accuracy.</p>
+
+                <div class="mb-3">
+                    <label class="form-label" for="{{ job_form.title.id_for_label }}">Job Title</label>
+                    {{ job_form.title }}
+                </div>
+                <div>
+                    <label class="form-label" for="{{ job_form.description.id_for_label }}">Description</label>
+                    {{ job_form.description }}
+                </div>
+            </div>
+
+            <div class="app-card">
+                <h2><span class="section-num">2</span> Candidate Resumes</h2>
+                <p class="section-help">Upload resume files, or paste candidates in manually. Add as many as you like.</p>
+
+                <div class="upload-zone mb-4">
+                    <i class="bi bi-cloud-arrow-up fs-3 text-muted d-block mb-2"></i>
+                    <label class="form-label d-block mb-2">Upload resume files (PDF or Word)</label>
+                    <input type="file" name="resumes" multiple accept=".pdf,.docx" class="form-control">
+                    <p class="section-help mb-0 mt-2">You can select multiple files at once. Accepts .pdf and .docx.</p>
+                </div>
+
+                <div class="upload-zone mb-4">
+                    <i class="bi bi-file-earmark-zip fs-3 text-muted d-block mb-2"></i>
+                    <label class="form-label d-block mb-2">Or upload a ZIP file of resumes</label>
+                    <input type="file" name="resumes_zip" accept=".zip" class="form-control">
+                    <p class="section-help mb-0 mt-2">
+                        Upload one .zip archive containing many resumes (.pdf, .docx, .txt).
+                        Every candidate inside will be extracted and screened automatically.
+                    </p>
+                </div>
+
+                <label class="form-label d-block mb-2">Or paste resumes manually</label>
+                <div id="manual-resumes">
+                    <div class="manual-resume-block">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text" name="manual_name" class="form-control" placeholder="Candidate name">
+                            </div>
+                            <div class="col-md-8">
+                                <textarea name="manual_resume" class="form-control" rows="3" placeholder="Paste resume text..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="add-candidate-btn" class="btn btn-add-candidate mt-1">
+                    <i class="bi bi-plus-lg me-1"></i>Add another candidate
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-navy btn-lg w-100">
+                <i class="bi bi-search"></i> Screen &amp; Rank Candidates
+            </button>
+        </form>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="app-card">
+            <h2 class="mb-3"><i class="bi bi-diagram-3 me-1"></i> How it works</h2>
+            <div class="step-row">
+                <div class="step-num">1</div>
+                <div>
+                    <div class="step-title">Preprocess</div>
+                    <div class="step-desc">Text is cleaned, tokenized, and skills/experience are extracted.</div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">2</div>
+                <div>
+                    <div class="step-title">Vectorize</div>
+                    <div class="step-desc">TF-IDF measures textual overlap between resume and job description.</div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">3</div>
+                <div>
+                    <div class="step-title">Predict</div>
+                    <div class="step-desc">A trained Random Forest classifier scores shortlist probability.</div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num">4</div>
+                <div>
+                    <div class="step-title">Rank</div>
+                    <div class="step-desc">Candidates are sorted best-fit first, with full scoring detail.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('add-candidate-btn').addEventListener('click', function () {
+    const container = document.getElementById('manual-resumes');
+    const block = document.createElement('div');
+    block.className = 'manual-resume-block';
+    block.innerHTML = `
+        <button type="button" class="remove-candidate-btn"><i class="bi bi-x-lg"></i></button>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <input type="text" name="manual_name" class="form-control" placeholder="Candidate name">
+            </div>
+            <div class="col-md-8">
+                <textarea name="manual_resume" class="form-control" rows="3" placeholder="Paste resume text..."></textarea>
+            </div>
+        </div>
+    `;
+    block.querySelector('.remove-candidate-btn').addEventListener('click', function () {
+        block.remove();
+    });
+    container.appendChild(block);
+});
+</script>
+{% endblock %}

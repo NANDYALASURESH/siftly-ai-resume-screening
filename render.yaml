@@ -1,0 +1,26 @@
+databases:
+  - name: resume-screening-db
+    plan: free
+    databaseName: resume_screening
+    user: resume_screening
+
+services:
+  - type: web
+    name: resume-screening
+    runtime: python
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn resume_screening.wsgi:application"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: resume-screening-db
+          property: connectionString
+      # RENDER_EXTERNAL_HOSTNAME is injected automatically by Render at
+      # runtime — settings.py reads it to populate ALLOWED_HOSTS.

@@ -1,0 +1,13 @@
+Job Title: Data Scientist
+
+We are seeking a Data Scientist to join our analytics team. The ideal
+candidate has strong experience in Python, Machine Learning, and Natural
+Language Processing (NLP). Hands-on experience with Pandas and NumPy for
+data analysis is required. Familiarity with TensorFlow or PyTorch for
+building predictive models is a plus. 3+ years of experience required.
+
+Responsibilities:
+- Build and evaluate machine learning models
+- Perform data analysis using Python, Pandas, and NumPy
+- Communicate findings to stakeholders
+- Collaborate with cross-functional teams in an agile environment

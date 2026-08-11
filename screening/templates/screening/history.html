@@ -1,0 +1,52 @@
+{% extends "screening/base.html" %}
+{% block nav_history %}active{% endblock %}
+{% block title %}History — Siftly{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <span class="hero-eyebrow"><i class="bi bi-clock-history"></i> Past screenings</span>
+    <h1 class="h2 mb-1">Screening History</h1>
+    <p class="text-muted mb-0">Every job posting you've screened candidates against.</p>
+</div>
+
+<div class="app-card">
+    {% if job_postings %}
+    <div class="results-table-wrap">
+    <table class="app-table">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Candidates Screened</th>
+                <th>Shortlisted</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for job in job_postings %}
+            <tr>
+                <td class="candidate-name">{{ job.title }}</td>
+                <td>{{ job.total_screened }}</td>
+                <td>
+                    {% if job.total_shortlisted %}
+                        <span class="badge-decision badge-shortlist"><i class="bi bi-award"></i> {{ job.total_shortlisted }}</span>
+                    {% else %}
+                        <span class="exp-text">0</span>
+                    {% endif %}
+                </td>
+                <td class="exp-text">{{ job.created_at|date:"M d, Y H:i" }}</td>
+                <td><a href="{% url 'screening:results' job.id %}" class="btn btn-outline-navy btn-sm">View Results</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            No job postings yet.
+            <div class="mt-2"><a href="{% url 'screening:home' %}">Screen your first candidates &rarr;</a></div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

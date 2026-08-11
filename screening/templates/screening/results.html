@@ -1,0 +1,121 @@
+{% extends "screening/base.html" %}
+{% block title %}Results — {{ job_posting.title }} — Siftly{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+    <div>
+        <span class="hero-eyebrow"><i class="bi bi-check2-circle"></i> Screening complete</span>
+        <h1 class="h2 mb-1">{{ job_posting.title }}</h1>
+        <p class="text-muted mb-0">Screened {{ job_posting.created_at|date:"M d, Y \a\t H:i" }}</p>
+    </div>
+    <a href="{% url 'screening:home' %}" class="btn btn-outline-navy">
+        <i class="bi bi-arrow-left me-1"></i> Screen another job
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon navy"><i class="bi bi-people"></i></div>
+            <div class="stat-value">{{ total_count }}</div>
+            <div class="stat-label">Candidates screened</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon gold"><i class="bi bi-award"></i></div>
+            <div class="stat-value">{{ shortlisted_count }}</div>
+            <div class="stat-label">Shortlisted by model</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon gray"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-value">{{ reject_count }}</div>
+            <div class="stat-label">Not shortlisted</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon navy"><i class="bi bi-graph-up"></i></div>
+            <div class="stat-value">{{ avg_match }}%</div>
+            <div class="stat-label">Average match score</div>
+        </div>
+    </div>
+</div>
+
+<div class="app-card">
+    <h2 class="mb-2"><i class="bi bi-file-text me-1"></i> Job Description</h2>
+    <p class="jd-text">{{ job_posting.description|linebreaksbr }}</p>
+</div>
+
+<div class="app-card">
+    <h2 class="mb-3"><i class="bi bi-bar-chart-steps me-1"></i> Ranked Candidates</h2>
+
+    {% if results %}
+    <div class="results-table-wrap">
+    <table class="app-table">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Candidate</th>
+                <th>Match</th>
+                <th>Prediction</th>
+                <th>Text Similarity</th>
+                <th>Skill Overlap</th>
+                <th>Matched Skills</th>
+                <th>Experience</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in results %}
+            <tr class="{% if r.predicted_label == 'Shortlist' %}row-shortlist{% else %}row-reject{% endif %}">
+                <td><span class="rank-chip">{{ forloop.counter }}</span></td>
+                <td class="candidate-name">{{ r.candidate.name }}</td>
+                <td>
+                    <div class="gauge" style="--pct: {{ r.shortlist_probability }};">
+                        <div class="gauge-inner">{{ r.shortlist_probability|floatformat:0 }}%</div>
+                    </div>
+                </td>
+                <td>
+                    {% if r.predicted_label == 'Shortlist' %}
+                        <span class="badge-decision badge-shortlist"><i class="bi bi-check-circle-fill"></i> Shortlist</span>
+                    {% else %}
+                        <span class="badge-decision badge-reject"><i class="bi bi-dash-circle"></i> Reject</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="gauge-cell">
+                        <span class="mini-bar"><span class="mini-bar-fill" style="width: {{ r.tfidf_similarity }}%;"></span></span>
+                        <span class="exp-text">{{ r.tfidf_similarity }}%</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="gauge-cell">
+                        <span class="mini-bar"><span class="mini-bar-fill" style="width: {{ r.skill_overlap }}%;"></span></span>
+                        <span class="exp-text">{{ r.skill_overlap }}%</span>
+                    </div>
+                </td>
+                <td style="max-width: 220px;">
+                    {% if r.matched_skills %}
+                        {% for skill in r.matched_skills %}
+                            <span class="skill-pill">{{ skill }}</span>
+                        {% endfor %}
+                    {% else %}
+                        <span class="skill-pill-empty">No overlap</span>
+                    {% endif %}
+                </td>
+                <td class="exp-text">{{ r.resume_years }} yrs <span class="text-muted-2">/ req {{ r.jd_years_required }}</span></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            No candidates were screened for this job posting yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

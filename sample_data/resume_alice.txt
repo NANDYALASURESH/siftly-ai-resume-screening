@@ -1,0 +1,3 @@
+Alice Johnson. 5 years of professional experience. Skilled in python,
+machine learning, deep learning, nlp, pandas, numpy, tensorflow.
+Passionate about delivering high quality results and collaborative work.

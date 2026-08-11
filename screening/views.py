@@ -164,8 +164,10 @@ def home(request):
                 },
             )
 
-        # Save job posting
-        job_posting = job_form.save()
+        # Save job posting, tied to the logged-in user
+        job_posting = job_form.save(commit=False)
+        job_posting.created_by = request.user
+        job_posting.save()
 
         # Create candidates and run ML model
         for name, resume_text in candidates_data:
@@ -218,6 +220,7 @@ def results(request, job_id):
     job_posting = get_object_or_404(
         JobPosting,
         id=job_id,
+        created_by=request.user,
     )
 
     ranked_results = (
@@ -263,7 +266,9 @@ def results(request, job_id):
 def history(request):
     """List of past job postings, most recent first."""
 
-    job_postings = JobPosting.objects.all().annotate(
+    job_postings = JobPosting.objects.filter(
+        created_by=request.user
+    ).annotate(
         total_screened=Count("results"),
         total_shortlisted=Count(
             "results",

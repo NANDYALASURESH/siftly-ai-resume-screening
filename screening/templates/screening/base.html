@@ -24,22 +24,48 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navMenu">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% block nav_home %}{% endblock %}" href="{% url 'screening:home' %}">
-                            <i class="bi bi-magic me-1"></i>New Screening
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% block nav_history %}{% endblock %}" href="{% url 'screening:history' %}">
-                            <i class="bi bi-clock-history me-1"></i>History
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% block nav_model %}{% endblock %}" href="{% url 'screening:about_model' %}">
-                            <i class="bi bi-cpu me-1"></i>Model Info
-                        </a>
-                    </li>
+                <ul class="navbar-nav ms-auto align-items-md-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link {% block nav_home %}{% endblock %}" href="{% url 'screening:home' %}">
+                                <i class="bi bi-magic me-1"></i>New Screening
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% block nav_history %}{% endblock %}" href="{% url 'screening:history' %}">
+                                <i class="bi bi-clock-history me-1"></i>History
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% block nav_model %}{% endblock %}" href="{% url 'screening:about_model' %}">
+                                <i class="bi bi-cpu me-1"></i>Model Info
+                            </a>
+                        </li>
+                        <li class="nav-item ms-md-2">
+                            <span class="nav-link disabled text-muted-2">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                            </span>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'screening:logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link p-0 border-0">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Log Out
+                                </button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'screening:login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Log In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'screening:signup' %}">
+                                <i class="bi bi-person-plus-fill me-1"></i>Sign Up
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

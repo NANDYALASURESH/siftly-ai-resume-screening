@@ -175,6 +175,11 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Auth redirects
+LOGIN_URL = 'screening:login'
+LOGIN_REDIRECT_URL = 'screening:home'
+LOGOUT_REDIRECT_URL = 'screening:login'
+
 # Production security hardening. Only kicks in when actually running on
 # Render or Vercel (not merely when DEBUG=False), so a plain local
 # `DEBUG=False` test run doesn't get redirected to a nonexistent https://

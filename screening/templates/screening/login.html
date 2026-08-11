@@ -1,3 +1,4 @@
+```html
 {% extends "screening/base.html" %}
 {% block title %}Log In — Siftly{% endblock %}
 
@@ -10,28 +11,73 @@
 
             <form method="post">
                 {% csrf_token %}
+
                 {% if form.non_field_errors %}
                     <div class="app-alert alert-danger mb-3">
-                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
                     </div>
                 {% endif %}
+
                 <div class="mb-3">
                     <label class="form-label" for="id_username">Username</label>
-                    <input type="text" name="username" class="form-control" id="id_username" autofocus required>
+                    <input type="text"
+                           name="username"
+                           class="form-control"
+                           id="id_username"
+                           autofocus
+                           required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label" for="id_password">Password</label>
-                    <input type="password" name="password" class="form-control" id="id_password" required>
+                    <input type="password"
+                           name="password"
+                           class="form-control"
+                           id="id_password"
+                           required>
                 </div>
+
                 <button type="submit" class="btn btn-navy w-100 mt-2">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Log In
+                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                    Log In
                 </button>
             </form>
 
+            <!-- Demo Account -->
+            <div class="app-alert alert-info mt-4 mb-0">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-person-badge-fill me-2 mt-1"></i>
+
+                    <div>
+                        <strong>Demo Account</strong>
+
+                        <div class="small mt-2">
+                            <div class="mb-1">
+                                <strong>Username:</strong>
+                                <code>demo_user</code>
+                            </div>
+
+                            <div>
+                                <strong>Password:</strong>
+                                <code>Demo@12345</code>
+                            </div>
+                        </div>
+
+                        <div class="small text-muted mt-2">
+                            Use these credentials to explore Siftly.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <p class="text-center text-muted-2 mt-4 mb-0">
-                Don't have an account? <a href="{% url 'screening:signup' %}">Sign up</a>
+                Don't have an account?
+                <a href="{% url 'screening:signup' %}">Sign up</a>
             </p>
         </div>
     </div>
 </div>
 {% endblock %}
+```
